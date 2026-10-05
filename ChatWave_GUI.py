@@ -1,3 +1,5 @@
+import os
+import sys
 import tkinter as tk
 
 # ---------- Theme ----------
@@ -15,39 +17,8 @@ BORDER = "#222222"
 
 FONT = "Segoe UI"
 
-# QuickChat icon (embedded, no image file needed)
-ICON_B64 = (
-    "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"
-)
+BASE_DIR = os.path.dirname(os.path.abspath(sys.argv[0]))
+LOGO_PATH = os.path.join(BASE_DIR, "quickchat_logo.png")
 
 # ---------- Demo Database ----------
 USERS = {"alex123": "password123"}
@@ -112,7 +83,7 @@ class QuickChat(tk.Tk):
 
         self.show_login()
 
-        # Keep taskbar icon + restore after minimize
+        # Taskbar icon + restore after minimize
         self.after(100, self.enable_taskbar_icon)
         self.bind("<Map>", self.on_restore)
 
@@ -183,24 +154,17 @@ class QuickChat(tk.Tk):
     # ---------- Logo ----------
     def load_logo_image(self):
         try:
-            return tk.PhotoImage(data=ICON_B64)
+            return tk.PhotoImage(file=LOGO_PATH)
         except Exception:
             return None
 
     def add_logo(self):
-        holder = tk.Frame(self.body, bg=BG)
-        holder.pack(pady=(14, 0))
-
         if self.logo_image:
-            tk.Label(holder, image=self.logo_image, bg=BG).pack()
-
-        # Wordmark: "Quick" in white + "Chat" in green
-        word = tk.Frame(holder, bg=BG)
-        word.pack(pady=(0, 0))
-        tk.Label(word, text="Quick", bg=BG, fg=TEXT, padx=0, bd=0,
-                 font=(FONT, 22, "bold")).pack(side="left")
-        tk.Label(word, text="Chat", bg=BG, fg=ACCENT, padx=0, bd=0,
-                 font=(FONT, 22, "bold")).pack(side="left")
+            tk.Label(self.body, image=self.logo_image,
+                     bg=BG).pack(pady=(20, 0))
+        else:
+            tk.Label(self.body, text="QuickChat", bg=BG, fg=ACCENT,
+                     font=(FONT, 24, "bold")).pack(pady=(45, 20))
 
     # ---------- Helpers ----------
     def clear_window(self):
